@@ -1,5 +1,6 @@
-[gd_scene load_steps=39 format=3 uid="uid://1t2bftd07ehj"]
+[gd_scene load_steps=40 format=3 uid="uid://1t2bftd07ehj"]
 
+[ext_resource type="Script" uid="uid://cv4euojkljfo2" path="res://player.cpp" id="1_lrhq4"]
 [ext_resource type="Texture2D" uid="uid://c11ev6k7cejyg" path="res://tiles/boar_NW_idle_0.png" id="1_p01ps"]
 [ext_resource type="Texture2D" uid="uid://o2ci1is2p1d" path="res://tiles/boar_NW_idle_1.png" id="2_m7dl7"]
 [ext_resource type="Texture2D" uid="uid://8rhv68h2nwfp" path="res://tiles/boar_NW_idle_2.png" id="3_48og4"]
@@ -191,6 +192,7 @@ animations = [{
 }]
 
 [node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_lrhq4")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_rgh0j")
