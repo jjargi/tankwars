@@ -146,9 +146,6 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("26_ctv73")
-}, {
-"duration": 1.0,
 "texture": ExtResource("27_1ofp1")
 }, {
 "duration": 1.0,
@@ -196,4 +193,4 @@ script = ExtResource("1_lrhq4")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_rgh0j")
-animation = &"BOAR_NW_IDLE"
+animation = &"boar_NW_RUN"

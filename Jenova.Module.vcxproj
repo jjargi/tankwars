@@ -50,7 +50,7 @@
 			<IntrinsicFunctions>true</IntrinsicFunctions>
 			<ExceptionHandling>Async</ExceptionHandling>
 			<RuntimeTypeInfo>true</RuntimeTypeInfo>
-			<AdditionalIncludeDirectories>./;./Jenova/JenovaSDK;./Jenova/Packages/GodotSDK-4.5.3;</AdditionalIncludeDirectories>
+			<AdditionalIncludeDirectories>./;./Jenova/JenovaSDK;./Jenova/Packages/GodotSDK-4.3.08;</AdditionalIncludeDirectories>
 			<ForcedIncludeFiles></ForcedIncludeFiles>
 		</ClCompile>
 		<Link>
@@ -60,7 +60,7 @@
 			<GenerateDebugInformation>DebugFull</GenerateDebugInformation>
 			<GenerateMapFile>true</GenerateMapFile>
 			<MapFileName>$(OutDir)Jenova.Module.map</MapFileName>
-			<AdditionalLibraryDirectories>./;./Jenova/JenovaSDK;./Jenova/Packages/GodotSDK-4.5.3;</AdditionalLibraryDirectories>
+			<AdditionalLibraryDirectories>./;./Jenova/JenovaSDK;./Jenova/Packages/GodotSDK-4.3.08;</AdditionalLibraryDirectories>
 			<AdditionalDependencies>libGodot.x64.lib;Jenova.SDK.x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
 			<DelayLoadDLLs>Jenova.Runtime.Win64.dll;</DelayLoadDLLs>
 			<LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
