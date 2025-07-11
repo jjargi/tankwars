@@ -1,3 +1,6 @@
-# Godot 4+ specific ignores
+# Godot 4+ Jenova specific ignores
+.vs/
+.vscode/
 .godot/
-/android/
+Jenova/
+/vc*.pdb

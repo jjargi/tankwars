@@ -196,5 +196,4 @@ script = ExtResource("1_lrhq4")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_rgh0j")
-animation = &"boar_SE_RUN"
-frame_progress = 0.483139
+animation = &"BOAR_NW_IDLE"

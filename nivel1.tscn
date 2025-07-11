@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=4 uid="uid://dqrk08w2dwki8"]
+[gd_scene load_steps=12 format=4 uid="uid://dqrk08w2dwki8"]
 
 [ext_resource type="Texture2D" uid="uid://b7domkp3c6a2p" path="res://tiles/spritesheet.png" id="1_dbkrs"]
 [ext_resource type="Texture2D" uid="uid://de71s0us3ituu" path="res://tiles/overworld_no_spaces_updated_0.png" id="1_iicca"]
+[ext_resource type="PackedScene" uid="uid://1t2bftd07ehj" path="res://Player.tscn" id="3_hbxap"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hbxap"]
 texture = ExtResource("1_iicca")
@@ -2075,3 +2076,6 @@ tile_set = SubResource("TileSet_57bpn")
 [node name="Layer3" type="TileMapLayer" parent="."]
 tile_map_data = PackedByteArray("AAAGAAMAAAAAAAoAAAAFAAMAAAAAAAoAAAADAAMAAAAAAAoAAAACAAMAAAAAAAoAAAACAAIAAAAAAAoAAAABAAIAAAAAAAoAAAAAAAIAAAAAAAoAAAAAAAEAAAAAAAoAAAD//wEAAAAAAAoAAAD+/wEAAAAAAAoAAAD9/wEAAAAAAAoAAAAEAAQAAAAEAAoAAAAFAAQAAAAEAAoAAAAEAAMAAAAAAAcAAAD+////AAAEAAQAAAA=")
 tile_set = SubResource("TileSet_iicca")
+
+[node name="Player" parent="." instance=ExtResource("3_hbxap")]
+position = Vector2(-47, 31)
