@@ -1,11 +1,11 @@
 [gd_scene load_steps=12 format=4 uid="uid://dqrk08w2dwki8"]
 
-[ext_resource type="Texture2D" uid="uid://b7domkp3c6a2p" path="res://tiles/spritesheet.png" id="1_dbkrs"]
-[ext_resource type="Texture2D" uid="uid://de71s0us3ituu" path="res://tiles/overworld_no_spaces_updated_0.png" id="1_iicca"]
-[ext_resource type="PackedScene" uid="uid://1t2bftd07ehj" path="res://Player.tscn" id="3_hbxap"]
+[ext_resource type="Texture2D" uid="uid://de71s0us3ituu" path="res://tiles/overworld_no_spaces_updated_0.png" id="1_re0in"]
+[ext_resource type="Texture2D" uid="uid://b7domkp3c6a2p" path="res://tiles/spritesheet.png" id="2_rd7nm"]
+[ext_resource type="PackedScene" uid="uid://1t2bftd07ehj" path="res://player.tscn" id="3_re0in"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hbxap"]
-texture = ExtResource("1_iicca")
+texture = ExtResource("1_re0in")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 1:0/0 = 0
@@ -667,7 +667,7 @@ texture_region_size = Vector2i(32, 32)
 15:41/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_iicca"]
-texture = ExtResource("1_dbkrs")
+texture = ExtResource("2_rd7nm")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 1:0/0 = 0
@@ -799,7 +799,7 @@ sources/3 = SubResource("TileSetAtlasSource_iicca")
 sources/0 = SubResource("TileSetAtlasSource_hbxap")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cotxi"]
-texture = ExtResource("1_dbkrs")
+texture = ExtResource("2_rd7nm")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 1:0/0 = 0
@@ -1103,7 +1103,7 @@ texture_region_size = Vector2i(32, 32)
 9:6/0/texture_origin = Vector2i(0, 8)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_57bpn"]
-texture = ExtResource("1_iicca")
+texture = ExtResource("1_re0in")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 1:0/0 = 0
@@ -1772,7 +1772,7 @@ sources/0 = SubResource("TileSetAtlasSource_cotxi")
 sources/1 = SubResource("TileSetAtlasSource_57bpn")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_dbkrs"]
-texture = ExtResource("1_dbkrs")
+texture = ExtResource("2_rd7nm")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 1:0/0 = 0
@@ -2077,5 +2077,5 @@ tile_set = SubResource("TileSet_57bpn")
 tile_map_data = PackedByteArray("AAAGAAMAAAAAAAoAAAAFAAMAAAAAAAoAAAADAAMAAAAAAAoAAAACAAMAAAAAAAoAAAACAAIAAAAAAAoAAAABAAIAAAAAAAoAAAAAAAIAAAAAAAoAAAAAAAEAAAAAAAoAAAD//wEAAAAAAAoAAAD+/wEAAAAAAAoAAAD9/wEAAAAAAAoAAAAEAAQAAAAEAAoAAAAFAAQAAAAEAAoAAAAEAAMAAAAAAAcAAAD+////AAAEAAQAAAA=")
 tile_set = SubResource("TileSet_iicca")
 
-[node name="Player" parent="." instance=ExtResource("3_hbxap")]
-position = Vector2(-47, 31)
+[node name="player" parent="." instance=ExtResource("3_re0in")]
+position = Vector2(-97, 57)
