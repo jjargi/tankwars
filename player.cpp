@@ -40,7 +40,8 @@ bool can_move_to(const Vector2i& target) {
 
         // Si coincide con los valores bloqueados, no permitir movimiento
         if ((source_id == 0 && atlas_coords == Vector2i(10, 5)) ||
-            (source_id == 0 && atlas_coords == Vector2i(4, 5))) {
+            (source_id == 0 && atlas_coords == Vector2i(4, 5))||
+            (source_id == 0 && atlas_coords == Vector2i(0, 5))){
             Output("Movimiento bloqueado por layer2 en celda ", target);
             return false;
         }
@@ -55,9 +56,6 @@ void set_player_position(Caller* instance, const Vector2i& cell_pos){
     }
 
     Vector2 world_position = tileMapLayer1->map_to_local(cell_pos);
-    //set_position(world_position);
-    //Position = world_position;
-    //Node2D* self2d = Object::cast_to<Node2D>(GetSelf<Node>(GetCaller()));
     Node2D* self2d = GetSelf<Node2D>(instance);
     if (self2d) {
         self2d->set_position(world_position);
@@ -88,6 +86,14 @@ void OnReady(Caller* instance)
      tileMapLayer1 = Object::cast_to<TileMapLayer>(parent->find_child("Layer1"));
      tileMapLayer2 = Object::cast_to<TileMapLayer>(parent->find_child("Layer2"));
      tileMapLayer3 = Object::cast_to<TileMapLayer>(parent->find_child("Layer3"));
+    if(!tileMapLayer1 || !tileMapLayer2 || !tileMapLayer3) {
+        Output("ERROR: No se encontraron las capas de TileMapLayer en el Inspector.");
+        return;
+    }
+    if(!parent) {
+        Output("ERROR: No se encontró el padre del nodo.");
+        return;
+    }
 
      set_player_position(instance, gridPosition);
 
@@ -124,9 +130,9 @@ void OnProcess(Caller* instance, double _delta)
 
         if (can_move_to(target)) {
             gridPosition = target;
-            //set_player_position(gridPosition);
             set_player_position(instance, gridPosition);
             moved = true;
+            Output("DEBUG: AnimatedSprite2D inicializado en celdax:%lfceldax:celday: %lf", (double)gridPosition.x, (double)gridPosition.y);
         }
         else {
             Output("Movimiento bloqueado: no hay celda en ", target);
@@ -135,6 +141,9 @@ void OnProcess(Caller* instance, double _delta)
 
 
 }
-
+void SetGridPositionExternamente(Caller* instance, const Vector2i& newGridPosition) {
+    gridPosition = newGridPosition;
+    set_player_position(instance, gridPosition);
+}
 // Jenova Script Block End
 JENOVA_SCRIPT_END
