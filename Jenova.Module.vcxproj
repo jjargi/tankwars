@@ -33,7 +33,7 @@
 		<IntDir>..\..\..\AppData\Local\Jenova_Cache\VisualStudio\</IntDir>
 		<BuiltInDir>..\..\..\AppData\Local\Jenova_Cache\BuiltInScripts\</BuiltInDir>
 		<TargetExt>.dll</TargetExt>
-		<JenovaConfiguration>eNqVkl9P2zAUxd/5FFGeUVTnX5u9lYZNYWVFK/Rlnqob+waspbbl2EgV4rvjOoCYtFF4sB/uPed37WM/nERRPOdcWKEk9DVqlBwlEzjEX6I4Pv2730jWO461MMisMv9RLUVrwOz/qTpzordCXoG9OxSThNKXNde6BguULhWDntILlOoetgtgd0hpMDZyzYzQdqB0xH1DiQYs1ti620Z2yuzgcAjPtsZh0DTSotkhF173+bkbMTjo19ZxoV6mrpzVzn6eNbqvDGqjGA6DMjV2QobYQkYX5z9Wm/l2cbO+Xl2O6p9OWrHDDZphvFc8SbJkmuRje11/Xwr5R8jbS8XRt8lYDjGde6sd4//lq1H0EPbX/lfRHyxxD3s0JGFaB+gbReM/g2fsD6piVrVpmU95Slie4qRgXRsH+ePpe/QdCHmMPes48IJwgCrnBEqSlcVH2FLcY789evQUq7YgpOBl1aWc5LzLqo/gdUjmGB2zKcCsK9qMTzpWlFOeZ890v/9+8yDDQvnn9J785PEJYH0Jqw==</JenovaConfiguration>
+		<JenovaConfiguration>eNqVklFv2yAUhd/7Kyw/V5axjRPvLYu7yV26VMuWlzFF13Bp0RxAGFeKqv73EnudOmlb0gd4uPec78KBx4soihdCKK+Mhq5Gi1qg5gr7+F0Ux5d/9hvNu0FgrRxyb9w/VCvVOnCHv6reD6rzSt+Cvz8Wk4Sxl7WwtgYPjK0Mh46xa9TmAXZL4PfI2Ghs9IY7ZX3P2IT7iBodeKyxHe4aLY3bw/EQge3dgKOm0R7dHoUKurfP3ap+gG7jB6HMy9T14O3g386a3LcOrTMc+964GqXSY2xjRtdXn9fbxW75bfN1fTOpvwzaqz1u0fXTveI0yZNZUkztTf1ppfRPpe9ujMDQJlN5jOkqWP0U//dQjaLHcf/d/6C6oyXu4ICOJNzaEfpK0YTPEBiHo4rOqzYri5nICC8yTCmXbTzKny7/R9+D0qfYcylAUCIAqkIQKEle0nPYWj1gtzt59AyrlhJCRVnJTJBCyLw6B2/HZE7RMZ8BzCVtc5FKTsuZKPLz6dkpfCtzKTJZVbykQNK0IBn5hQ/7j1fv3S9N+C3BQy+engF81CKj</JenovaConfiguration>
 	</PropertyGroup>
 	<ItemDefinitionGroup>
 		<ClCompile>
@@ -78,6 +78,9 @@
 		</ClCompile>
 		<ClCompile Include="player.cpp">
 			<UniqueIdentity>e37aa8f5b3d0fc567d43</UniqueIdentity>
+		</ClCompile>
+		<ClCompile Include="player2.cpp">
+			<UniqueIdentity>bf3fd2f99c65a1004121</UniqueIdentity>
 		</ClCompile>
 	</ItemGroup>
 	<Target Name="JenovaPreBuild" BeforeTargets="JenovaBuild">

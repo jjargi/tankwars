@@ -104,10 +104,10 @@
  {
     // Obtener el jugador y la capa de tiles
     Node* self = GetSelf<Node>(instance);
-    _player = _currentLevel->get_node_or_null("Player");
+    _player = _currentLevel->get_node_or_null("Player2");
     if (_player == nullptr)
     {
-        _player = _currentLevel->get_node_or_null("player");
+        _player = _currentLevel->get_node_or_null("player2");
     }
 
     _tileMapLayer = Object::cast_to<TileMapLayer>(_currentLevel->get_node_or_null("Layer1"));

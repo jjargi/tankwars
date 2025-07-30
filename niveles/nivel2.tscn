@@ -1,8 +1,9 @@
-[gd_scene load_steps=13 format=4 uid="uid://bfx6toyea3cht"]
+[gd_scene load_steps=14 format=4 uid="uid://bfx6toyea3cht"]
 
 [ext_resource type="Texture2D" uid="uid://de71s0us3ituu" path="res://tiles/overworld_no_spaces_updated_0.png" id="1_3jvxc"]
 [ext_resource type="Texture2D" uid="uid://b7domkp3c6a2p" path="res://tiles/spritesheet.png" id="2_trgjw"]
-[ext_resource type="PackedScene" uid="uid://1t2bftd07ehj" path="res://player.tscn" id="3_trgjw"]
+[ext_resource type="PackedScene" uid="uid://dj44kwvmudow1" path="res://player2.tscn" id="3_trgjw"]
+[ext_resource type="PackedScene" uid="uid://1t2bftd07ehj" path="res://player.tscn" id="4_8sdon"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_306hj"]
 texture = ExtResource("1_3jvxc")
@@ -3767,5 +3768,13 @@ tile_set = SubResource("TileSet_nwga7")
 tile_map_data = PackedByteArray("AAAMAPr/AQAHAAIAAAAOAPr/AQAHAAIAAAAJAPz/AQAHAAIAAAASAAQAAQAHAAIAAAAOAAIAAQAHAAIAAAAKAAQAAQAHAAIAAAAVAAEAAQAHAAIAAAA=")
 tile_set = SubResource("TileSet_3jv3p")
 
-[node name="player" parent="." instance=ExtResource("3_trgjw")]
-position = Vector2(81, 144)
+[node name="player2" parent="." instance=ExtResource("3_trgjw")]
+
+[node name="player" parent="." instance=ExtResource("4_8sdon")]
+position = Vector2(399, 79)
+
+[node name="player3" parent="." instance=ExtResource("4_8sdon")]
+position = Vector2(302, 95)
+
+[node name="player4" parent="." instance=ExtResource("4_8sdon")]
+position = Vector2(255, 56)
