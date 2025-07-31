@@ -1,8 +1,6 @@
 
-//JENOVA_SCRIPT_END
-/* Jenova C++ Node Base Script (Meteora) */
+/* Jenova C++ Node Base Script - Versión Compatible */
 
-// Godot SDK
 #include <Godot/godot.hpp>
 #include <Godot/classes/node.hpp>
 #include <Godot/classes/node2d.hpp>
@@ -12,174 +10,140 @@
 #include <Godot/classes/input.hpp>
 #include <Godot/classes/tile_map_layer.hpp>
 #include <Godot/classes/timer.hpp>
-
-// Jenova SDK
 #include <JenovaSDK.h>
 
-// Namespaces
 using namespace godot;
 using namespace jenova::sdk;
 
-// Jenova Script Block Start
 JENOVA_SCRIPT_BEGIN
 
-// Variables miembro
-AnimatedSprite2D* animatedSprite = nullptr;
-TileMapLayer* tileMapLayer1 = nullptr;
-TileMapLayer* tileMapLayer2 = nullptr;
-TileMapLayer* tileMapLayer3 = nullptr;
-Node2D* player2 = nullptr;
-Timer* moveTimer = nullptr;
-Vector2i gridPosition = Vector2i(0, 0);
-bool initialized = false;
+// Variables por instancia usando propiedades del nodo
+void set_instance_data(Node* node, Timer* timer, const Vector2i& grid_pos, bool initialized) {
+    node->set_meta("move_timer", timer);
+    node->set_meta("grid_position", grid_pos);
+    node->set_meta("initialized", initialized);
+}
 
-// Funciones auxiliares
-bool can_move_to(const Vector2i& target) {
-    // Verificar que la celda existe en layer1
-    TypedArray<Vector2i> used_cells = tileMapLayer1->get_used_cells();
-    if (!used_cells.has(target)) {
-        return false;
-    }
+Timer* get_move_timer(Node* node) {
+    return Object::cast_to<Timer>(node->get_meta("move_timer"));
+}
 
-    // Verificar si layer2 tiene un tile en esa celda
-    TileData* tile_data = tileMapLayer2->get_cell_tile_data(target);
-    if (tile_data != nullptr) {
-        int source_id = tileMapLayer2->get_cell_source_id(target);
-        Vector2i atlas_coords = tileMapLayer2->get_cell_atlas_coords(target);
+Vector2i get_grid_position(Node* node) {
+    return node->get_meta("grid_position");
+}
 
-        // Si coincide con los valores bloqueados, no permitir movimiento
-        if ((source_id == 0 && atlas_coords == Vector2i(10, 5)) ||
-            (source_id == 0 && atlas_coords == Vector2i(4, 5))) {
-            Output("Movimiento bloqueado por layer2 en celda ", target);
+bool is_initialized(Node* node) {
+    return node->get_meta("initialized");
+}
+
+void set_grid_position(Node* node, const Vector2i& pos) {
+    node->set_meta("grid_position", pos);
+}
+
+void set_initialized(Node* node, bool value) {
+    node->set_meta("initialized", value);
+}
+
+// Funciones auxiliares básicas
+AnimatedSprite2D* get_sprite(Node* node) {
+    return Object::cast_to<AnimatedSprite2D>(node->find_child("AnimatedSprite2D"));
+}
+
+TileMapLayer* get_layer(Node* node, const String& name) {
+    return Object::cast_to<TileMapLayer>(node->get_parent()->find_child(name));
+}
+
+Node2D* get_player(Node* node) {
+    return Object::cast_to<Node2D>(node->get_parent()->find_child("player2"));
+}
+
+bool can_move(TileMapLayer* layer1, TileMapLayer* layer2, const Vector2i& target) {
+    TypedArray<Vector2i> cells = layer1->get_used_cells();
+    if (!cells.has(target)) return false;
+
+    TileData* tile = layer2->get_cell_tile_data(target);
+    if (tile) {
+        int src_id = layer2->get_cell_source_id(target);
+        Vector2i coords = layer2->get_cell_atlas_coords(target);
+        if ((src_id == 0 && coords == Vector2i(10, 5)) || (src_id == 0 && coords == Vector2i(4, 5))) {
             return false;
         }
     }
     return true;
 }
 
-void set_player_position(Caller* instance, const Vector2i& cell_pos) {
-    if (tileMapLayer1 == nullptr) {
-        return;
-    }
-
-    Vector2 world_position = tileMapLayer1->map_to_local(cell_pos);
-
-    Node2D* self2d = GetSelf<Node2D>(instance);
-    if (self2d) {
-        self2d->set_position(world_position);
-    }
-    Output("Jugador movido a celda: ", cell_pos, " -> posición global: ", world_position);
+// Funciones principales
+void OnAwake(Caller* instance) {
+    Node* self = GetSelf<Node>(instance);
+    Timer* timer = memnew(Timer);
+    self->add_child(timer);
+    timer->connect("timeout", Callable(self, "_on_move_timeout"));
+    timer->set_wait_time(1.0);
+    timer->start();
+    set_instance_data(self, timer, Vector2i(0, 0), false);
 }
 
-Vector2i calculate_direction(const Vector2i& current, const Vector2i& target) {
-    Vector2i direction = Vector2i();
-    Vector2i difference = target - current;
+void OnReady(Caller* instance) {
+    AnimatedSprite2D* sprite = get_sprite(GetSelf<Node>(instance));
+    if (sprite) {
+        sprite->set_animation("BOAR_NW_IDLE");
+        sprite->play();
+    }
+}
 
-    // Priorizar movimiento horizontal o vertical según mayor distancia
-    if (Math::abs(difference.x) > Math::abs(difference.y)) {
-        direction.x = (target.x > current.x) ? 1 : -1;
+void OnProcess(Caller* instance, double delta) {
+    Node* self = GetSelf<Node>(instance);
+    if (!is_initialized(self)) {
+        TileMapLayer* layer1 = get_layer(self, "Layer1");
+        if (layer1) {
+            set_grid_position(self, layer1->local_to_map(GetSelf<Node2D>(instance)->get_position()));
+            set_initialized(self, true);
+        }
+    }
+}
+
+void _on_move_timeout(Caller* instance) {
+    Node* self = GetSelf<Node>(instance);
+    Timer* timer = get_move_timer(self);
+    Vector2i grid_pos = get_grid_position(self);
+
+    TileMapLayer* layer1 = get_layer(self, "Layer1");
+    TileMapLayer* layer2 = get_layer(self, "Layer2");
+    Node2D* player = get_player(self);
+    AnimatedSprite2D* sprite = get_sprite(self);
+
+    if (!layer1 || !layer2 || !player || !sprite) return;
+
+    Vector2i target = layer1->local_to_map(player->get_position());
+    Vector2i diff = target - grid_pos;
+    Vector2i dir;
+    if (Math::abs(diff.x) > Math::abs(diff.y)) {
+        dir = Vector2i((diff.x > 0) ? 1 : -1, 0);
     }
     else {
-        direction.y = (target.y > current.y) ? 1 : -1;
+        dir = Vector2i(0, (diff.y > 0) ? 1 : -1);
     }
 
-    return direction;
+        Vector2i new_pos = grid_pos + dir;
+
+        if (can_move(layer1, layer2, new_pos)) {
+            set_grid_position(self, new_pos);
+            GetSelf<Node2D>(instance)->set_position(layer1->map_to_local(new_pos));
+
+            if (dir.x < 0) sprite->play("boar_NW_RUN");
+            else if (dir.x > 0) sprite->play("boar_SE_RUN");
+            else if (dir.y < 0) sprite->play("boar_NE_RUN");
+            else if (dir.y > 0) sprite->play("boar_SW_RUN");
+        }
 }
 
-void update_animation(const Vector2i& direction) {
-    if (animatedSprite == nullptr) return;
-
-    if (direction.x < 0) animatedSprite->play("boar_NW_RUN");
-    else if (direction.x > 0) animatedSprite->play("boar_SE_RUN");
-    else if (direction.y < 0) animatedSprite->play("boar_NE_RUN");
-    else if (direction.y > 0) animatedSprite->play("boar_SW_RUN");
-}
-
-void move_towards_player2(Caller* instance) {
-    if (player2 == nullptr || tileMapLayer1 == nullptr) return;
-
-    // Obtener posición actual de player2 en el grid
-    Vector2i targetPosition = tileMapLayer1->local_to_map(player2->get_position());
-
-    // Calcular dirección óptima
-    Vector2i direction = calculate_direction(gridPosition, targetPosition);
-    Vector2i newPosition = gridPosition + direction;
-
-    // Verificar si puede moverse
-    if (can_move_to(newPosition)) {
-        gridPosition = newPosition;
-        set_player_position(instance, gridPosition);
-        update_animation(direction);
-        Output("Movimiento a celda: ", gridPosition);
-    }
-}
-
-// Called When Node Enters Scene Tree
-void OnAwake(Caller* instance)
-{
-    // Crear e inicializar el Timer
-    moveTimer = memnew(Timer);
+void OnDestroy(Caller* instance) {
     Node* self = GetSelf<Node>(instance);
-    self->add_child(moveTimer);
-
-    // Configurar el timer
-    if (!moveTimer->is_connected("timeout", Callable(self, "_on_move_timeout")))
-    {
-        moveTimer->connect("timeout", Callable(self, "_on_move_timeout"));
-    }
-    moveTimer->set_wait_time(1.0);
-    moveTimer->set_one_shot(false); // Para que se repita automáticamente
-}
-
-// Called When Node Exits Scene Tree
-void OnDestroy(Caller* instance)
-{
-    if (moveTimer != nullptr) {
-        moveTimer->queue_free();
-        moveTimer = nullptr;
+    Timer* timer = get_move_timer(self);
+    if (timer) {
+        timer->queue_free();
     }
 }
 
-// Called When Node and All It's Children Entered Scene Tree
-void OnReady(Caller* instance)
-{
-    // Inicializar componentes
-    Node* node = GetSelf<Node>(instance);
-    animatedSprite = Object::cast_to<AnimatedSprite2D>(node->find_child("AnimatedSprite2D"));
-
-    Node* parent = node->get_parent();
-    tileMapLayer1 = Object::cast_to<TileMapLayer>(parent->find_child("Layer1"));
-    tileMapLayer2 = Object::cast_to<TileMapLayer>(parent->find_child("Layer2"));
-    tileMapLayer3 = Object::cast_to<TileMapLayer>(parent->find_child("Layer3"));
-    player2 = Object::cast_to<Node2D>(parent->find_child("player2"));
-
-    if (animatedSprite != nullptr) {
-        animatedSprite->set_animation("BOAR_NW_IDLE");
-        animatedSprite->play();
-    }
-
-    // Iniciar movimiento
-    moveTimer->start();
-}
-
-// Called On Every Frame
-void OnProcess(Caller* instance, double _delta)
-{
-    if (!initialized && tileMapLayer1 != nullptr) {
-        // Inicializar posición basada en la posición manual
-        Node2D* self2d = GetSelf<Node2D>(instance);
-        gridPosition = tileMapLayer1->local_to_map(self2d->get_position());
-        Output("Player inicializado en posición manual: celda ", gridPosition);
-        initialized = true;
-    }
-}
-
-// Método para manejar el timeout del timer
-void _on_move_timeout(Caller* instance)
-{
-    move_towards_player2(instance);
-}
-
-// Jenova Script Block End
 JENOVA_SCRIPT_END
 
