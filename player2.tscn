@@ -425,9 +425,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_7wgpr")
 }],
-"loop": true,
-"name": &"atack_down",
-"speed": 5.0
+"loop": false,
+"name": &"attack_down",
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 0.2,
@@ -454,9 +454,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_n5cq5")
 }],
-"loop": true,
-"name": &"atack_left",
-"speed": 5.0
+"loop": false,
+"name": &"attack_left",
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 0.2,
@@ -483,9 +483,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_wwq17")
 }],
-"loop": true,
-"name": &"atack_right",
-"speed": 5.0
+"loop": false,
+"name": &"attack_right",
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 0.2,
@@ -512,9 +512,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_idb6t")
 }],
-"loop": true,
-"name": &"atack_up",
-"speed": 5.0
+"loop": false,
+"name": &"attack_up",
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -755,6 +755,5 @@ script = ExtResource("1_iwfv5")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_rgh0j")
 animation = &"idle_down"
-frame_progress = 0.918337
 
 [node name="Camera2D" type="Camera2D" parent="."]
