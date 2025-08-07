@@ -155,6 +155,9 @@ void play_death_animation(Caller* instance) {
     // Evitar múltiples llamadas
     if (self->get_meta("is_dying", false)) return;
 
+
+    Timer* timer = get_move_timer(self);
+    timer->stop();
     self->set_meta("is_dying", true);
     self->set_meta("should_delete", false);
     Output("Iniciando animación de muerte");

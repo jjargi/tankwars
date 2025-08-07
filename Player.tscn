@@ -1,7 +1,7 @@
 [gd_scene load_steps=57 format=3 uid="uid://1t2bftd07ehj"]
 
 [ext_resource type="Texture2D" uid="uid://c11ev6k7cejyg" path="res://tiles/boar_NW_idle_0.png" id="1_p01ps"]
-[ext_resource type="Script" uid="uid://dluclxt2cvfm8" path="res://EnemyController.cs" id="1_pgbbb"]
+[ext_resource type="Script" uid="uid://cv4euojkljfo2" path="res://player.cpp" id="1_pgbbb"]
 [ext_resource type="Texture2D" uid="uid://o2ci1is2p1d" path="res://tiles/boar_NW_idle_1.png" id="2_m7dl7"]
 [ext_resource type="Texture2D" uid="uid://8rhv68h2nwfp" path="res://tiles/boar_NW_idle_2.png" id="3_48og4"]
 [ext_resource type="Texture2D" uid="uid://ci2yjrphywu0o" path="res://tiles/boar_NW_idle_3.png" id="4_xmpta"]
