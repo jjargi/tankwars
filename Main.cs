@@ -10,7 +10,7 @@ public partial class Main : Node2D
 
     private int _currentLevelIndex = 0;
     private Node2D _currentLevel;
-    private player _player;
+    private PlayerController  _player;
     private TileMapLayer _tileMapLayer;
 
     // Posiciones que activan el cambio de nivel (nivelIndex, posición)
@@ -19,7 +19,12 @@ public partial class Main : Node2D
         {0, new Vector2I(5, -2)},  // Cambio desde nivel1 (celda 10,5)
         {1, new Vector2I(21, -7)}    // Cambio desde nivel2 (celda 3,8)
     };
-
+    // Posiciones donde aparece el jugador por nivel
+    private readonly Dictionary<int, Vector2I> _playerSpawnCells = new()
+{
+    {0, new Vector2I(0, 7)},
+    {1, new Vector2I(11, 7)}
+};
     public override void _Ready()
     {
         LoadLevel(_levelPaths[_currentLevelIndex]);
@@ -44,16 +49,63 @@ public partial class Main : Node2D
         InitializeLevelComponents();
     }
 
+
+    //private void InitializeLevelComponents()
+    //{
+    //    _player = _currentLevel.GetNodeOrNull<PlayerController>("Player2") ??
+    //              _currentLevel.GetNodeOrNull<PlayerController>("player2");
+
+    //    _tileMapLayer = _currentLevel.GetNodeOrNull<TileMapLayer>("Layer1");
+
+    //    if (_player == null) GD.PushError("No se encontró el jugador");
+    //    if (_tileMapLayer == null) GD.PushError("No se encontró TileMapLayer");
+
+    //    // Posición inicial deseada (por ejemplo, celda 0,0)
+    //    Vector2I initialCell = new Vector2I(0, 0);
+
+    //    // Posicionar al jugador correctamente
+    //    //_player.SetInitialGridPosition(initialCell, _tileMapLayer);
+    //    _player.SetGridPositionExternally(initialCell);
+    //}
+    //private void InitializeLevelComponents()
+    //{
+    //    _player = _currentLevel.GetNodeOrNull<PlayerController>("Player2") ??
+    //              _currentLevel.GetNodeOrNull<PlayerController>("player2");
+
+    //    _tileMapLayer = _currentLevel.GetNodeOrNull<TileMapLayer>("Layer1");
+
+    //    if (_player == null) GD.PushError("No se encontró el jugador");
+    //    if (_tileMapLayer == null) GD.PushError("No se encontró TileMapLayer");
+
+    //    // Obtener la posición inicial desde el diccionario
+    //    if (_levelChangePositions.TryGetValue(_currentLevelIndex, out Vector2I initialCell))
+    //    {
+    //        _player.SetGridPositionExternally(initialCell);
+    //    }
+    //    else
+    //    {
+    //        GD.PushWarning($"No se definió posición inicial para el nivel {_currentLevelIndex}");
+    //    }
+    //}
     private void InitializeLevelComponents()
     {
-        // Obtener el jugador y la capa de tiles
-        _player = _currentLevel.GetNodeOrNull<player>("Player") ??
-                 _currentLevel.GetNodeOrNull<player>("player");
+        _player = _currentLevel.GetNodeOrNull<PlayerController>("Player2") ??
+                  _currentLevel.GetNodeOrNull<PlayerController>("player2");
 
         _tileMapLayer = _currentLevel.GetNodeOrNull<TileMapLayer>("Layer1");
 
         if (_player == null) GD.PushError("No se encontró el jugador");
         if (_tileMapLayer == null) GD.PushError("No se encontró TileMapLayer");
+
+        if (_playerSpawnCells.TryGetValue(_currentLevelIndex, out Vector2I spawnCell))
+        {
+            Vector2 spawnPos = _tileMapLayer.MapToLocal(spawnCell);
+            _player.SetGridPositionExternally(spawnCell);
+        }
+        else
+        {
+            GD.PushWarning($"No se definió posición de spawn para el nivel {_currentLevelIndex}");
+        }
     }
 
     public override void _Process(double delta)

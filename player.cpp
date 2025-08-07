@@ -16,7 +16,7 @@ using namespace godot;
 using namespace jenova::sdk;
 
 JENOVA_SCRIPT_BEGIN
-bool is_dying = false;
+
 // Variables por instancia usando propiedades del nodo
 void set_instance_data(Node* node, Timer* timer, const Vector2i& grid_pos, bool initialized) {
     node->set_meta("move_timer", timer);
@@ -84,6 +84,8 @@ void OnAwake(Caller* instance) {
 }
 
 void OnReady(Caller* instance) {
+    Node* self = GetSelf<Node>(instance);
+    self->set_meta("should_delete", false); 
     AnimatedSprite2D* sprite = get_sprite(GetSelf<Node>(instance));
     if (sprite) {
         sprite->set_animation("BOAR_NW_IDLE");
@@ -99,6 +101,12 @@ void OnProcess(Caller* instance, double delta) {
             set_grid_position(self, layer1->local_to_map(GetSelf<Node2D>(instance)->get_position()));
             set_initialized(self, true);
         }
+    }
+    // Verificar eliminación
+    if (self->get_meta("should_delete", false)) {
+        Output("Eliminando nodo: ", self->get_name());
+        self->queue_free();
+        return;
     }
 }
 
@@ -137,112 +145,48 @@ void _on_move_timeout(Caller* instance) {
     }
 }
 
-//void play_death_animation(Caller* instance) {
-//    if (is_dying) return;
-//    //is_dying = true;
-//
-//    Output("INICIANDO ANIMACION DE MUERTE");
-//
-//    Node* self = GetSelf<Node>(instance);
-//    AnimatedSprite2D* sprite = get_sprite(self);
-//
-//    if (sprite) {
-//        // Desconectar señal previa si existe
-//        if (sprite->is_connected("animation_finished", Callable(self, "_on_death_animation_finished"))) {
-//            sprite->disconnect("animation_finished", Callable(self, "_on_death_animation_finished"));
-//        }
-//
-//        // Conectar señal
-//        sprite->connect("animation_finished", Callable(self, "_on_death_animation_finished"));
-//
-//        // Desactivar colisiones durante la muerte
-//        CharacterBody2D* body = Object::cast_to<CharacterBody2D>(self);
-//        if (body) {
-//            body->set_collision_layer(0);
-//            body->set_collision_mask(0);
-//        }
-//
-//        // Reproducir animación
-//        sprite->play("death_animation");
-//    }
-//    else {
-//        Output("ERROR: Sprite no encontrado, eliminando directamente");
-//        self->queue_free();
-//    }
-//}
-//
-//void _on_death_animation_finished(Caller* instance) {
-//    Output("ANIMACION DE MUERTE COMPLETADA");
-//    if (is_dying) {
-//        GetSelf<Node>(instance)->queue_free();
-//    }
-//}
-//
-//void OnDestroy(Caller* instance) {
-//    Output("DESTRUCTOR EJECUTADO");
-//    Node* self = GetSelf<Node>(instance);
-//
-//    // Liberar timer
-//    Timer* timer = get_move_timer(self);
-//    if (timer) {
-//        timer->queue_free();
-//    }
-//
-//    // Limpiar conexión de señal
-//    AnimatedSprite2D* sprite = get_sprite(self);
-//    if (sprite && sprite->is_connected("animation_finished", Callable(self, "_on_death_animation_finished"))) {
-//        sprite->disconnect("animation_finished", Callable(self, "_on_death_animation_finished"));
-//    }
-//}
+
 // Versión corregida del sistema de muerte de enemigos
 
 void play_death_animation(Caller* instance) {
+     
     Node* self = GetSelf<Node>(instance);
 
-    // Verificar si ya está en estado de muerte
-    if (self->get_meta("is_dying", false)) {
-        return;
-    }
+    // Evitar múltiples llamadas
+    if (self->get_meta("is_dying", false)) return;
 
-    // Marcar como que está muriendo
     self->set_meta("is_dying", true);
-
-    Output("INICIANDO ANIMACION DE MUERTE");
+    self->set_meta("should_delete", false);
+    Output("Iniciando animación de muerte");
 
     AnimatedSprite2D* sprite = get_sprite(self);
     if (!sprite) {
+        Output("no hay animacion de muerte");
         self->queue_free();
         return;
     }
 
-    // Desactivar colisiones
-    CharacterBody2D* body = Object::cast_to<CharacterBody2D>(self);
-    if (body) {
-        body->set_collision_layer(0);
-        body->set_collision_mask(0);
-    }
-
     // Conectar señal solo si no está conectada
-    if (!sprite->is_connected("animation_finished", Callable(self, "_on_death_animation_finished"))) {
-        sprite->connect("animation_finished", Callable(self, "_on_death_animation_finished"));
-    }
-
-    // Reproducir animación
+    //if (!sprite->is_connected("animation_finished", Callable(self, "_on_death_animation_finished"))) {
+    //    sprite->connect("animation_finished", Callable(self, "_on_death_animation_finished"));
+    //}
+    sprite->stop();
+    sprite->connect("animation_finished", Callable(self, "_on_death_animation_finished"));
     sprite->play("death_animation");
 }
 
 void _on_death_animation_finished(Caller* instance) {
     Node* self = GetSelf<Node>(instance);
-    Output("ANIMACION DE MUERTE COMPLETADA - ELIMINANDO ENEMIGO");
+    Output("Animación de muerte completada");
 
-    // Desconectar la señal primero
+    // Marcar ESTA instancia para eliminación
+    self->set_meta("should_delete", true);
+
+    // Desconectar señal
     AnimatedSprite2D* sprite = get_sprite(self);
     if (sprite && sprite->is_connected("animation_finished", Callable(self, "_on_death_animation_finished"))) {
         sprite->disconnect("animation_finished", Callable(self, "_on_death_animation_finished"));
     }
-
-    // Eliminar el nodo
-    self->queue_free();
 
 }
 

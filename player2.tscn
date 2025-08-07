@@ -1,6 +1,6 @@
 [gd_scene load_steps=111 format=3 uid="uid://dj44kwvmudow1"]
 
-[ext_resource type="Script" uid="uid://dqvrgyxl1qlyj" path="res://player2.cpp" id="1_iwfv5"]
+[ext_resource type="Script" uid="uid://ce047bxfhsfat" path="res://PlayerController.cs" id="1_iwfv5"]
 [ext_resource type="Texture2D" uid="uid://btt4h02hg3687" path="res://tiles/FREE_Adventurer 2D Pixel Art/Sprites/ATTACK 1/attack1_down.png" id="2_7gy1f"]
 [ext_resource type="Texture2D" uid="uid://crr7vdlbp4vbh" path="res://tiles/FREE_Adventurer 2D Pixel Art/Sprites/RUN/run_down.png" id="2_rihsh"]
 [ext_resource type="Texture2D" uid="uid://dv16ykixgmsq5" path="res://tiles/FREE_Adventurer 2D Pixel Art/Sprites/IDLE/idle_down.png" id="2_uqwy3"]

@@ -88,13 +88,13 @@ void attack_enemy(Caller* instance) {
 
         // Verificar si el enemigo puede morir
         //if (enemy->has_method("play_death_animation")) {
-        //    bool is_dying = enemy->get_meta("is_dying", false);
-        //    if (!is_dying) {
-        //        Output("EJECUTANDO ANIMACION DE MUERTE");
-        //        enemy->call("play_death_animation");
-        //    }
+            bool is_dying = enemy->get_meta("is_dying", false);
+            if (!is_dying) {
+                Output("EJECUTANDO ANIMACION DE MUERTE");
+                enemy->call("play_death_animation");
+            }
         //}
-        enemy->queue_free();
+  
     }
 }
 bool can_move_to(const Vector2i& target) {

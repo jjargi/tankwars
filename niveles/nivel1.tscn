@@ -2747,7 +2747,8 @@ tile_set = SubResource("TileSet_iicca")
 [node name="player2" parent="." instance=ExtResource("3_re0in")]
 position = Vector2(-46.9695, -20.3715)
 
-[node name="enemigo2" parent="." instance=ExtResource("4_rd7nm")]
-
 [node name="enemigo" parent="." instance=ExtResource("4_rd7nm")]
 position = Vector2(92, 55)
+
+[node name="enemigo2" parent="." instance=ExtResource("4_rd7nm")]
+position = Vector2(75, -2)
