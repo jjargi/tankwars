@@ -751,6 +751,7 @@ animations = [{
 
 [node name="player2" type="CharacterBody2D"]
 script = ExtResource("1_iwfv5")
+MaxHealth = 4
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_rgh0j")

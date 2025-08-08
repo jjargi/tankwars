@@ -10,13 +10,17 @@
 #include <Godot/classes/input.hpp>
 #include <Godot/classes/tile_map_layer.hpp>
 #include <Godot/classes/timer.hpp>
+#include <Godot/classes/h_box_container.hpp>
+#include <Godot/classes/color_rect.hpp>
 #include <JenovaSDK.h>
 
 using namespace godot;
 using namespace jenova::sdk;
-
+JENOVA_CLASS_NAME("Player C++ Script")
 JENOVA_SCRIPT_BEGIN
-
+void SetupHealthBar(Caller* instance);
+void UpdateHealthBar(Caller* instance);
+JENOVA_PROPERTY(int, MaxHealth, 4)
 // Variables por instancia usando propiedades del nodo
 void set_instance_data(Node* node, Timer* timer, const Vector2i& grid_pos, bool initialized) {
     node->set_meta("move_timer", timer);
@@ -87,10 +91,30 @@ void OnReady(Caller* instance) {
     Node* self = GetSelf<Node>(instance);
     self->set_meta("should_delete", false); 
     AnimatedSprite2D* sprite = get_sprite(GetSelf<Node>(instance));
+    // Configurar sprite
     if (sprite) {
         sprite->set_animation("BOAR_NW_IDLE");
         sprite->play();
     }
+    // Inicializar propiedades por instancia
+    self->set_meta("current_health", MaxHealth);
+    self->set_meta("should_delete", false);
+    
+    
+    // Crear o obtener HealthContainer
+    HBoxContainer* healthContainer = Object::cast_to<HBoxContainer>(self->find_child("HealthContainer"));
+    
+    if (!healthContainer) {
+        healthContainer = memnew(HBoxContainer);
+        healthContainer->set_name("HealthContainer");
+        healthContainer->set_position(Vector2(0, -20));
+        self->add_child(healthContainer);
+    }
+    
+    // Guardar referencia en metadatos
+    self->set_meta("health_container", healthContainer);
+    
+    SetupHealthBar(instance);
 }
 
 void OnProcess(Caller* instance, double delta) {
@@ -170,9 +194,6 @@ void play_death_animation(Caller* instance) {
     }
 
     // Conectar señal solo si no está conectada
-    //if (!sprite->is_connected("animation_finished", Callable(self, "_on_death_animation_finished"))) {
-    //    sprite->connect("animation_finished", Callable(self, "_on_death_animation_finished"));
-    //}
     sprite->stop();
     sprite->connect("animation_finished", Callable(self, "_on_death_animation_finished"));
     sprite->play("death_animation");
@@ -194,14 +215,54 @@ void _on_death_animation_finished(Caller* instance) {
 }
 
 void OnDestroy(Caller* instance) {
-    //Node* self = GetSelf<Node>(instance);
-    //Output("DESTRUCTOR EJECUTADO");
 
-    //// Limpieza adicional
-    //AnimatedSprite2D* sprite = get_sprite(self);
-    //if (sprite && sprite->is_connected("animation_finished", Callable(self, "_on_death_animation_finished"))) {
-    //    sprite->disconnect("animation_finished", Callable(self, "_on_death_animation_finished"));
-    //}
+}
+void SetupHealthBar(Caller* instance) {
+    Node* self = GetSelf<Node>(instance);
+    HBoxContainer* healthContainer = Object::cast_to<HBoxContainer>(self->get_meta("health_container"));
+    
+
+    // Obtener vida actual (con conversión explícita)
+    int current_health = (int)self->get_meta("current_health", 0);
+
+    // Crear nuevos indicadores
+    for (int i = 0; i < MaxHealth; i++) {
+        ColorRect* lifeRect = memnew(ColorRect);
+
+        // Versión corregida sin ambigüedad
+        /*Primer valor (0): Componente rojo
+        Segundo valor (1): Componente verde
+        Tercer valor (0): Componente azul*/
+        lifeRect->set_color(i < current_health ? Color(0, 0, 1) : Color(1, 0, 0));
+        lifeRect->set_custom_minimum_size(Vector2(10, 10));
+        lifeRect->set_h_size_flags(Control::SIZE_SHRINK_CENTER);
+
+        healthContainer->add_child(lifeRect);
+    }
+}
+void TakeDamage(Caller* instance, int damage) {
+    Node* self = GetSelf<Node>(instance);
+    int currentHealth = MAX(0, (int)self->get_meta("current_health") - damage);
+    self->set_meta("current_health", currentHealth);
+
+    UpdateHealthBar(instance);
+
+    if (currentHealth <= 0) {
+        play_death_animation(instance);
+    }
+}
+void UpdateHealthBar(Caller* instance) {
+    Node* self = GetSelf<Node>(instance);
+    HBoxContainer* healthContainer = Object::cast_to<HBoxContainer>(self->get_meta("health_container"));
+    int current_health = (int)self->get_meta("current_health", 0);
+
+    Array children = healthContainer->get_children();
+    for (int i = 0; i < children.size(); i++) {
+        ColorRect* rect = Object::cast_to<ColorRect>(children[i]);
+        if (rect) {
+            rect->set_color(i < current_health ? Color(0, 1, 0) : Color(1, 0, 0));
+        }
+    }
 }
 JENOVA_SCRIPT_END
 

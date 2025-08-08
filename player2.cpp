@@ -17,9 +17,11 @@ using namespace jenova::sdk;
 
 // Enumerador para direcciones
 enum Direction { DIR_DOWN, DIR_UP, DIR_LEFT, DIR_RIGHT };
-
+// Class Name
+JENOVA_CLASS_NAME("Enemy C++ Script")
 JENOVA_SCRIPT_BEGIN
 
+JENOVA_PROPERTY(int, MaxHealth, 4)
 // Variables globales
 AnimatedSprite2D* animatedSprite = nullptr;
 TileMapLayer* tileMapLayer1 = nullptr;
@@ -47,30 +49,6 @@ Node* find_enemy_at_position(Caller* instance, const Vector2i& cell_pos) {
     }
     return nullptr;
 }
-//void attack_enemy(Caller* instance) {
-//    Vector2i attack_position = gridPosition;
-//
-//    // Calcular dirección de ataque
-//    switch (last_direction) {
-//    case DIR_UP: attack_position += Vector2i(-1, 0); break;
-//    case DIR_RIGHT: attack_position += Vector2i(0, -1); break;
-//    case DIR_DOWN: attack_position += Vector2i(1, 0); break;
-//    case DIR_LEFT: attack_position += Vector2i(0, 1); break;
-//    }
-//
-//    Node* enemy = find_enemy_at_position(instance, attack_position);
-//    if (enemy) {
-//        Output("ENEMIGO DETECTADO EN POSICION: ", attack_position);
-//
-//        // Verificar si el enemigo está vivo
-//        if (enemy->has_method("play_death_animation") && !Object::cast_to<Node>(enemy)->get_meta("is_dying", false)) {
-//            Output("EJECUTANDO ANIMACION DE MUERTE");
-//            enemy->call("play_death_animation");
-//            // Marcar como que está muriendo
-//            Object::cast_to<Node>(enemy)->set_meta("is_dying", true);
-//        }
-//    }
-//}
 void attack_enemy(Caller* instance) {
     Vector2i attack_position = gridPosition;
 
@@ -86,15 +64,18 @@ void attack_enemy(Caller* instance) {
     if (enemy) {
         Output("ENEMIGO DETECTADO EN POSICION: ", attack_position);
 
-        // Verificar si el enemigo puede morir
-        //if (enemy->has_method("play_death_animation")) {
+        //// Verificar si el enemigo puede morir
+        // con el método TakeDamage en caso de que no tenga puntos de vida
+        if (enemy->has_method("TakeDamage")) {
+            enemy->call("TakeDamage", 1); // se le resta 1 punto de daño por ataque
+        }
+        else {
+            // Sistema de respaldo si no tiene TakeDamage
             bool is_dying = enemy->get_meta("is_dying", false);
-            if (!is_dying) {
-                Output("EJECUTANDO ANIMACION DE MUERTE");
+            if (!is_dying && enemy->has_method("play_death_animation")) {
                 enemy->call("play_death_animation");
             }
-        //}
-  
+        }
     }
 }
 bool can_move_to(const Vector2i& target) {

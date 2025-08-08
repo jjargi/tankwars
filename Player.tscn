@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=3 uid="uid://1t2bftd07ehj"]
+[gd_scene load_steps=58 format=3 uid="uid://1t2bftd07ehj"]
 
 [ext_resource type="Texture2D" uid="uid://c11ev6k7cejyg" path="res://tiles/boar_NW_idle_0.png" id="1_p01ps"]
 [ext_resource type="Script" uid="uid://cv4euojkljfo2" path="res://player.cpp" id="1_pgbbb"]
@@ -306,11 +306,25 @@ animations = [{
 "speed": 20.0
 }]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pgbbb"]
+radius = 17.0
+height = 36.0
+
 [node name="player" type="CharacterBody2D" groups=["player"]]
 script = ExtResource("1_pgbbb")
+MaxHealth = 4
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_rgh0j")
 animation = &"BOAR_NW_IDLE"
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_pgbbb")
+metadata/_edit_group_ = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+offset_left = -20.0
+offset_top = -26.0
+offset_right = 20.0
+offset_bottom = -17.0
+metadata/_edit_group_ = true
