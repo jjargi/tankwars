@@ -20,6 +20,7 @@ JENOVA_CLASS_NAME("Player C++ Script")
 JENOVA_SCRIPT_BEGIN
 void SetupHealthBar(Caller* instance);
 void UpdateHealthBar(Caller* instance);
+void attack_to_player(Caller* instance);
 JENOVA_PROPERTY(int, MaxHealth, 4)
 // Variables por instancia usando propiedades del nodo
 void set_instance_data(Node* node, Timer* timer, const Vector2i& grid_pos, bool initialized) {
@@ -89,7 +90,6 @@ void OnAwake(Caller* instance) {
 
 void OnReady(Caller* instance) {
     Node* self = GetSelf<Node>(instance);
-    self->set_meta("should_delete", false); 
     AnimatedSprite2D* sprite = get_sprite(GetSelf<Node>(instance));
     // Configurar sprite
     if (sprite) {
@@ -167,6 +167,7 @@ void _on_move_timeout(Caller* instance) {
         else if (dir.y < 0) sprite->play("boar_NE_RUN");
         else if (dir.y > 0) sprite->play("boar_SW_RUN");
     }
+    attack_to_player(instance);
 }
 
 
@@ -234,7 +235,7 @@ void SetupHealthBar(Caller* instance) {
         Segundo valor (1): Componente verde
         Tercer valor (0): Componente azul*/
         lifeRect->set_color(i < current_health ? Color(0, 0, 1) : Color(1, 0, 0));
-        lifeRect->set_custom_minimum_size(Vector2(10, 10));
+        lifeRect->set_custom_minimum_size(Vector2(5, 5));
         lifeRect->set_h_size_flags(Control::SIZE_SHRINK_CENTER);
 
         healthContainer->add_child(lifeRect);
@@ -261,6 +262,34 @@ void UpdateHealthBar(Caller* instance) {
         ColorRect* rect = Object::cast_to<ColorRect>(children[i]);
         if (rect) {
             rect->set_color(i < current_health ? Color(0, 1, 0) : Color(1, 0, 0));
+        }
+    }
+}
+void attack_to_player(Caller* instance) {
+    Node* self = GetSelf<Node>(instance);
+    TileMapLayer* layer1 = get_layer(self, "Layer1");
+    if (!layer1) return;
+
+    // Obtener posición actual del enemigo en celdas
+    Vector2i enemy_cell = layer1->local_to_map(GetSelf<Node2D>(instance)->get_position());
+
+    // Buscar al jugador
+    Node* player = get_player(self);
+    if (!player) return;
+
+    // Obtener posición del jugador
+    Vector2i player_cell = layer1->local_to_map(Object::cast_to<Node2D>(player)->get_position());
+
+    // Verificar si están en la misma celda
+    if (enemy_cell == player_cell) {
+        Output("¡Colisión con el jugador en celda: ", enemy_cell);
+
+        // Llamar a TakeDamage si existe el método
+        if (player->has_method("TakeDamage")) {
+            player->call("TakeDamage", 1); // 1 punto de daño
+        }
+        else {
+            Output("¡El jugador no tiene método TakeDamage!");
         }
     }
 }

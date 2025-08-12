@@ -10,6 +10,8 @@
 #include <Godot/classes/input.hpp>
 #include <Godot/classes/tile_map_layer.hpp>
 #include <Godot/classes/sprite_frames.hpp>
+#include <Godot/classes/h_box_container.hpp>
+#include <Godot/classes/color_rect.hpp>
 #include <JenovaSDK.h>
 
 using namespace godot;
@@ -29,7 +31,13 @@ TileMapLayer* tileMapLayer2 = nullptr;
 TileMapLayer* tileMapLayer3 = nullptr;
 Vector2i gridPosition = Vector2i(0, 0);
 Direction last_direction = DIR_DOWN;  // Usamos el enumerador
-
+void SetupHealthBar(Caller* instance);
+void UpdateHealthBar(Caller* instance);
+void play_death_animation(Caller* instance);
+// Funciones auxiliares básicas
+AnimatedSprite2D* get_sprite(Node* node) {
+    return Object::cast_to<AnimatedSprite2D>(node->find_child("AnimatedSprite2D"));
+}
 // Función para buscar enemigos en una celda específica
 Node* find_enemy_at_position(Caller* instance, const Vector2i& cell_pos) {
     Node* parent = GetSelf<Node>(instance)->get_parent();
@@ -119,9 +127,31 @@ void OnReady(Caller* instance) {
     tileMapLayer3 = Object::cast_to<TileMapLayer>(parent->find_child("Layer3"));
 
     set_player_position(instance, gridPosition);
+
+    // Inicializar propiedades por instancia
+    //node->set_meta("current_health", MaxHealth);//para que no regenera la vida todo el rato
+    // Solo inicializar current_health si no existe
+    if (!node->has_meta("current_health")) {
+        node->set_meta("current_health", MaxHealth);
+    }
+    // Crear o obtener HealthContainer
+    HBoxContainer* healthContainer = Object::cast_to<HBoxContainer>(node->find_child("HealthContainer"));
+
+    if (!healthContainer) {
+        healthContainer = memnew(HBoxContainer);
+        healthContainer->set_name("HealthContainer");
+        healthContainer->set_position(Vector2(0, -30));
+        node->add_child(healthContainer);
+    }
+
+    // Guardar referencia en metadatos
+    node->set_meta("health_container", healthContainer);
+
+    SetupHealthBar(instance);
 }
 
 void OnProcess(Caller* instance, double _delta) {
+    Node* node = GetSelf<Node>(instance);
     Input* input = Input::get_singleton();
     Vector2i direction = Vector2i();
 
@@ -156,6 +186,8 @@ void OnProcess(Caller* instance, double _delta) {
 
     // Animación de ataque basada en enumerador
     if (input->is_action_just_pressed("attack")) {
+        Output(" salud del jugador a : %i ", (int)node->get_meta("current_health"));
+        Output("maxima salud del jugador a : %i ", MaxHealth);
 
         switch (last_direction) {
 		default:
@@ -174,5 +206,74 @@ void SetGridPositionExternamente(Caller* instance, const Vector2i& newGridPositi
     gridPosition = newGridPosition;
     set_player_position(instance, gridPosition);
 }
+
+void SetupHealthBar(Caller* instance) {
+    Node* self = GetSelf<Node>(instance);
+    HBoxContainer* healthContainer = Object::cast_to<HBoxContainer>(self->get_meta("health_container"));
+
+
+    // Obtener vida actual (con conversión explícita)
+    int current_health = (int)self->get_meta("current_health", 0);
+
+    // Crear nuevos indicadores
+    for (int i = 0; i < MaxHealth; i++) {
+        ColorRect* lifeRect = memnew(ColorRect);
+
+        // Versión corregida sin ambigüedad
+        /*Primer valor (0): Componente rojo
+        Segundo valor (1): Componente verde
+        Tercer valor (0): Componente azul*/
+        lifeRect->set_color(i < current_health ? Color(0, 0, 1) : Color(1, 0, 0));
+        lifeRect->set_custom_minimum_size(Vector2(5, 5));
+        lifeRect->set_h_size_flags(Control::SIZE_SHRINK_CENTER);
+
+        healthContainer->add_child(lifeRect);
+    }
+}
+void TakeDamage(Caller* instance, int damage) {
+    Node* self = GetSelf<Node>(instance);
+    int currentHealth = MAX(0, (int)self->get_meta("current_health") - damage);
+    self->set_meta("current_health", currentHealth);
+
+    UpdateHealthBar(instance);
+
+    if (currentHealth <= 0) {
+        play_death_animation(instance);
+    }
+}
+void play_death_animation(Caller* instance) {
+
+    Node* self = GetSelf<Node>(instance);
+
+    // Evitar múltiples llamadas
+    if (self->get_meta("is_dying", false)) return;
+
+
+
+    self->set_meta("is_dying", true);
+    self->set_meta("should_delete", false);
+    Output("Iniciando animación de muerte");
+
+    AnimatedSprite2D* sprite = get_sprite(self);
+    // Conectar señal solo si no está conectada
+    sprite->stop();
+    sprite->connect("animation_finished", Callable(self, "_on_death_animation_finished"));
+    sprite->play("death_animation");
+}
+void UpdateHealthBar(Caller* instance) {
+    Node* self = GetSelf<Node>(instance);
+    HBoxContainer* healthContainer = Object::cast_to<HBoxContainer>(self->get_meta("health_container"));
+    int current_health = (int)self->get_meta("current_health", 0);
+
+    Array children = healthContainer->get_children();
+    for (int i = 0; i < children.size(); i++) {
+        ColorRect* rect = Object::cast_to<ColorRect>(children[i]);
+        if (rect) {
+            rect->set_color(i < current_health ? Color(0, 1, 0) : Color(1, 0, 0));
+        }
+    }
+}
+// Añade esto en JENOVA_SCRIPT_BEGIN
+int get_max_health() { return MaxHealth; }
 
 JENOVA_SCRIPT_END
