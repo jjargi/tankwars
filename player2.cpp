@@ -13,7 +13,7 @@
 #include <Godot/classes/h_box_container.hpp>
 #include <Godot/classes/color_rect.hpp>
 #include <JenovaSDK.h>
-
+#include <Godot/classes/timer.hpp>
 using namespace godot;
 using namespace jenova::sdk;
 
@@ -34,6 +34,12 @@ Direction last_direction = DIR_DOWN;  // Usamos el enumerador
 void SetupHealthBar(Caller* instance);
 void UpdateHealthBar(Caller* instance);
 void play_death_animation(Caller* instance);
+
+bool is_invulnerable = false;
+Timer* invuln_timer = nullptr;
+Timer* blink_timer = nullptr;
+
+
 // Funciones auxiliares básicas
 AnimatedSprite2D* get_sprite(Node* node) {
     return Object::cast_to<AnimatedSprite2D>(node->find_child("AnimatedSprite2D"));
@@ -120,6 +126,19 @@ void OnReady(Caller* instance) {
         animatedSprite->set_animation("idle_down");
         animatedSprite->play();
     }
+
+    // Crear Timers para invulnerabilidad y parpadeo
+    invuln_timer = memnew(Timer);
+    invuln_timer->set_wait_time(2.0); // 2 segundos
+    invuln_timer->set_one_shot(true);
+    node->add_child(invuln_timer);
+    invuln_timer->connect("timeout", Callable(node, "_on_invuln_timeout"));
+
+    blink_timer = memnew(Timer);
+    blink_timer->set_wait_time(0.2); // cada 0.2s alterna visibilidad
+    blink_timer->set_one_shot(false);
+    node->add_child(blink_timer);
+    blink_timer->connect("timeout", Callable(node, "_on_blink_timeout"));
 
     Node* parent = node->get_parent();
     tileMapLayer1 = Object::cast_to<TileMapLayer>(parent->find_child("Layer1"));
@@ -230,17 +249,40 @@ void SetupHealthBar(Caller* instance) {
         healthContainer->add_child(lifeRect);
     }
 }
+//void TakeDamage(Caller* instance, int damage) {
+//    Node* self = GetSelf<Node>(instance);
+//    int currentHealth = MAX(0, (int)self->get_meta("current_health") - damage);
+//    self->set_meta("current_health", currentHealth);
+//
+//    UpdateHealthBar(instance);
+//
+//    if (currentHealth <= 0) {
+//        play_death_animation(instance);
+//    }
+//}
 void TakeDamage(Caller* instance, int damage) {
     Node* self = GetSelf<Node>(instance);
+
+    // Si está invulnerable, ignorar el daño
+    if (is_invulnerable) return;
+
     int currentHealth = MAX(0, (int)self->get_meta("current_health") - damage);
     self->set_meta("current_health", currentHealth);
-
     UpdateHealthBar(instance);
 
+    // Activar invulnerabilidad y parpadeo
+    is_invulnerable = true;
+    invuln_timer->start();
+    blink_timer->start();
+
     if (currentHealth <= 0) {
+        blink_timer->stop();
+        AnimatedSprite2D* sprite = get_sprite(self);
+        if (sprite) sprite->set_visible(true);
         play_death_animation(instance);
     }
 }
+
 void play_death_animation(Caller* instance) {
 
     Node* self = GetSelf<Node>(instance);
@@ -275,5 +317,17 @@ void UpdateHealthBar(Caller* instance) {
 }
 // Añade esto en JENOVA_SCRIPT_BEGIN
 int get_max_health() { return MaxHealth; }
+void _on_invuln_timeout(Caller* instance) {
+    // Fin de invulnerabilidad
+    is_invulnerable = false;
+    blink_timer->stop();
+    AnimatedSprite2D* sprite = get_sprite(GetSelf<Node>(instance));
+    if (sprite) sprite->set_visible(true);
+}
+
+void _on_blink_timeout(Caller* instance) {
+    AnimatedSprite2D* sprite = get_sprite(GetSelf<Node>(instance));
+    if (sprite) sprite->set_visible(!sprite->is_visible());
+}
 
 JENOVA_SCRIPT_END

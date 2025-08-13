@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://de71s0us3ituu" path="res://tiles/overworld_no_spaces_updated_0.png" id="1_re0in"]
 [ext_resource type="Texture2D" uid="uid://b7domkp3c6a2p" path="res://tiles/spritesheet.png" id="2_rd7nm"]
 [ext_resource type="PackedScene" uid="uid://dj44kwvmudow1" path="res://player2.tscn" id="3_re0in"]
-[ext_resource type="PackedScene" uid="uid://1t2bftd07ehj" path="res://player.tscn" id="4_rd7nm"]
+[ext_resource type="PackedScene" uid="uid://c75pi05y2vkec" path="res://player.tscn" id="4_rd7nm"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hbxap"]
 texture = ExtResource("1_re0in")
